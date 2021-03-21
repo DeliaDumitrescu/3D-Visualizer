@@ -1,0 +1,30 @@
+{
+  "name": "3d-visualizer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.ts",
+    "build": "tsc --project ./"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DeliaDumitrescu/3D-Visualizer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DeliaDumitrescu/3D-Visualizer/issues"
+  },
+  "homepage": "https://github.com/DeliaDumitrescu/3D-Visualizer#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@types/express": "4.17.6",
+    "@types/node": "14.0.13",
+    "nodemon": "^2.0.7",
+    "ts-node": "8.10.2",
+    "typescript": "3.9.5"
+  }
+}
