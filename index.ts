@@ -4,10 +4,10 @@ const app = express();
 const PORT = 80;
 app.use(express.static('public'))
 app.get('/', (req, res) =>{
-  
+
   let ejs = require('ejs');
   let people = ['geddy', 'neil', 'alex'];
-  let html = ejs.render('<%= people.join(", "); %>', {people: people});
+  let html = ejs.render('<%= people.join(", "); %> </br> For more, click <a href="viewer.html">here</a>.', {people: people});
 
   res.send(html)
 }
