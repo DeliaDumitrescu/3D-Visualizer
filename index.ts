@@ -1,4 +1,8 @@
 import express from 'express';
+
+//var PouchDB = require('pouchdb');
+//var db = new PouchDB('my_database');
+
 // rest of the code remains same
 const app = express();
 const PORT = 80;
