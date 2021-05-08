@@ -51,7 +51,7 @@ app.get('/profile/:user/', (req,res) => {
 
   res.render("pages/profile", pageData)
 })
-
+/*
 // returns the specified model of a user
 app.get("/model/:user/:modelId", (req, res) => {
   let username = req.params["user"];
@@ -70,6 +70,7 @@ app.get("/model/:user/:modelId", (req, res) => {
 
   res.status(404).send("");
 })
+*/
 
 app.get('/', (req, res) =>{
 
