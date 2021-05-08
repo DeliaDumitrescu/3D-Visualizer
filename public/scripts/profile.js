@@ -6,7 +6,7 @@ const createScene = (canvas, engine, modelName) => {
         camera.attachControl(canvas, true);
         const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0));
 
-        BABYLON.SceneLoader.ImportMeshAsync("", "/", "data/" + modelName); //empty string all meshes
+        BABYLON.SceneLoader.ImportMeshAsync("", "/", "data/" + modelName);
     
         return scene;
 }
@@ -18,6 +18,8 @@ async function loadModels() {
                 let canvas = canvases[i]
                 
                 engine = new BABYLON.Engine(canvas, true);
+
+                // modelName format: username/modelId
                 let modelName = canvas.getAttribute("id");
 
                 const scene = createScene(canvas, engine, modelName);
