@@ -7,6 +7,7 @@ import express from 'express';
 const app = express();
 const PORT = 80;
 
+app.set('view engine', 'ejs');
 app.use(express.static('public'))
 
 app.get('/watch', (req,res) => {
@@ -31,9 +32,45 @@ app.post('/logout', (req,res) => {
   // ...
 })
 
-app.get('/wall/:user/', (req,res) => {
-  res.send("Esti pe wallul lui " + req.params["user"])
+// render the profile of an user
+app.get('/profile/:user/', (req,res) => {
+
+  let username = req.params["user"]
+
+  const modelsFolder = 'public/data/' + username;
+  const fs = require('fs');
+  let models : string[] = [];
+  
+  if (fs.existsSync(modelsFolder))
+    models = fs.readdirSync(modelsFolder);
+
+  let pageData = {
+    username: username,
+    models: models
+  };
+
+  res.render("pages/profile", pageData)
 })
+/*
+// returns the specified model of a user
+app.get("/model/:user/:modelId", (req, res) => {
+  let username = req.params["user"];
+  let model = req.params["modelId"];
+
+  let modelPath = 'public/data/' + username + "/" + model;
+
+  console.log(modelPath)
+
+  const fs = require('fs');
+
+  if (fs.existsSync(modelPath)) {
+    let fileBinary = fs.readFileSync(modelPath);
+    res.send(fileBinary);
+  }
+
+  res.status(404).send("");
+})
+*/
 
 app.get('/', (req, res) =>{
 
