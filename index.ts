@@ -3,6 +3,7 @@ import formidable from 'formidable';
 import fs from 'fs';
 import passport from "passport";
 import strategy from "passport-facebook";
+import session from "cookie-session"
 
 //var PouchDB = require('pouchdb');
 //var db = new PouchDB('my_database');
@@ -15,9 +16,15 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'))
 
 const FacebookStrategy = strategy.Strategy;
+const cookieSession = session
+app.use(cookieSession({
+  name: 'facebook-auth-session',
+  secret: 'secret'
+}))
 app.use(passport.initialize());
+app.use(passport.session());
 
-passport.serializeUser(function (user, done) {s
+passport.serializeUser(function (user, done) {
   done(null, user);
 });
 
@@ -30,7 +37,6 @@ passport.use(new FacebookStrategy({
   clientSecret: "02c48ae3f2827680148546f183e06607",
   callbackURL: "http://localhost:8080/auth/facebook/callback"
 }, function (accessToken, refreshToken, profile, done) {
-  console.log('AAA')
   return done(null, profile);
 }
 ));
@@ -43,6 +49,17 @@ app.get('/auth/facebook/callback',
     failureRedirect: '/login'
   }));
 
+app.get('/test', (req, res) => {
+  console.log(req.user);
+  res.send(req.user?.toString().toLowerCase() || 'None');
+})
+
+app.get('/logout', (req,res) => {
+  req.session = null;
+  req.logout();
+  console.log(req.user);
+  res.redirect('/');
+})
 
 app.get('/watch', (req,res) => {
   let videoID = req.query["v"]
@@ -90,18 +107,6 @@ app.post('/fileupload', (req,res) => {
     });
     
   });
-})
-
-app.get('/register', (req,res) => {
-  res.send("Aici ar trebui sa te inregistrezi.")
-})
-
-app.get('/login', (req,res) => {
-  res.send("Aici ar trebui sa te loghezi.")
-})
-
-app.post('/logout', (req,res) => {
-  // ...
 })
 
 // render the profile of an user
