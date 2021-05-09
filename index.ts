@@ -1,16 +1,48 @@
 import express from 'express';
 import formidable from 'formidable';
 import fs from 'fs';
+import passport from "passport";
+import strategy from "passport-facebook";
 
 //var PouchDB = require('pouchdb');
 //var db = new PouchDB('my_database');
 
 // rest of the code remains same
 const app = express();
-const PORT = 80;
+const PORT = 8080;
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'))
+
+const FacebookStrategy = strategy.Strategy;
+app.use(passport.initialize());
+
+passport.serializeUser(function (user, done) {s
+  done(null, user);
+});
+
+passport.deserializeUser(function (obj, done) {
+  done(null, obj as any);
+});
+
+passport.use(new FacebookStrategy({
+  clientID: "926992954758657",
+  clientSecret: "02c48ae3f2827680148546f183e06607",
+  callbackURL: "http://localhost:8080/auth/facebook/callback"
+}, function (accessToken, refreshToken, profile, done) {
+  console.log('AAA')
+  return done(null, profile);
+}
+));
+
+app.get('/auth/facebook', passport.authenticate('facebook'));
+
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', {
+    successRedirect: '/',
+    failureRedirect: '/login'
+  }));
+
 
 app.get('/watch', (req,res) => {
   let videoID = req.query["v"]
