@@ -4,9 +4,12 @@ import fs from 'fs';
 import passport from "passport";
 import strategy from "passport-facebook";
 import session from "cookie-session"
+import dotenv from "dotenv";
 
 //var PouchDB = require('pouchdb');
 //var db = new PouchDB('my_database');
+
+dotenv.config();
 
 // rest of the code remains same
 const app = express();
@@ -17,6 +20,7 @@ app.use(express.static('public'))
 
 const FacebookStrategy = strategy.Strategy;
 const cookieSession = session
+
 app.use(cookieSession({
   name: 'facebook-auth-session',
   secret: 'secret'
@@ -32,10 +36,17 @@ passport.deserializeUser(function (obj, done) {
   done(null, obj as any);
 });
 
+const clientID = process.env.FACEBOOK_CLIENT_ID
+const clientSecret = process.env.FACEBOOK_CLIENT_SECRET
+const callbackURL = process.env.FACEBOOK_CALLBACK_URL
+if(!clientID || !clientSecret || !callbackURL) {
+  throw new Error('Env not set up');
+}
+
 passport.use(new FacebookStrategy({
-  clientID: "926992954758657",
-  clientSecret: "02c48ae3f2827680148546f183e06607",
-  callbackURL: "http://localhost:8080/auth/facebook/callback"
+  clientID: clientID,
+  clientSecret: clientSecret,
+  callbackURL: callbackURL
 }, function (accessToken, refreshToken, profile, done) {
   return done(null, profile);
 }
@@ -51,7 +62,7 @@ app.get('/auth/facebook/callback',
 
 app.get('/test', (req, res) => {
   console.log(req.user);
-  res.send(req.user?.toString().toLowerCase() || 'None');
+  res.send(req.user);
 })
 
 app.get('/logout', (req,res) => {
@@ -153,7 +164,7 @@ app.get('/', (req, res) =>{
 
   let ejs = require('ejs');
   let people = ['antonio', 'delia', 'liviu', 'silviu'];
-  let html = ejs.render('<%= people.join(", "); %> </br> For more, click <a href="viewer.html">here</a>.', {people: people});
+  let html = ejs.render('<%= people.join(", "); %> </br> For more, click <a href="viewer.html">HERE</a>. <br> For LOGIN WITH FACEBOOK, click <a href="/auth/facebook"> HERE </a>.  <br> For LOGOUT, click <a href="/logout"> HERE </a>. <br> To test if logged in, click <a href="/test"> HERE </a>.' , {people: people});
 
   res.send(html)
 }
