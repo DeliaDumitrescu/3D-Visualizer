@@ -6,9 +6,6 @@ import strategy from "passport-facebook";
 import session from "cookie-session"
 import dotenv from "dotenv";
 
-//var PouchDB = require('pouchdb');
-//var db = new PouchDB('my_database');
-
 dotenv.config();
 
 // rest of the code remains same
@@ -19,7 +16,11 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'))
 
 const FacebookStrategy = strategy.Strategy;
-const cookieSession = session
+const cookieSession = session;
+
+var PouchDB = require('pouchdb');
+PouchDB.plugin(require('pouchdb-upsert'));
+var db = new PouchDB('users');
 
 app.use(cookieSession({
   name: 'facebook-auth-session',
@@ -48,6 +49,12 @@ passport.use(new FacebookStrategy({
   clientSecret: clientSecret,
   callbackURL: callbackURL
 }, function (accessToken, refreshToken, profile, done) {
+  //console.log(profile)
+  db.putIfNotExists(profile.id, {displayName: profile.displayName}).then(function (res: any) {
+    console.log(res)
+  }).catch(function (err: any) {
+    console.log(":(")
+  });
   return done(null, profile);
 }
 ));
