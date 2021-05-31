@@ -102,12 +102,22 @@ app.get("/model/:user/:modelId", (req, res) => {
 })
 */
 
+app.post("/search", (req, res) => {
+  
+})
+
 app.get('/login', (req, res) => {
-  res.render("pages/login");
+  let data = {
+    formButtonName: "Login"
+  }
+  res.render("pages/login", data);
 })
 
 app.get('/register', (req, res) => {
-  res.render("pages/register");
+  let data = {
+    formButtonName: "Register"
+  }
+  res.render("pages/register", data);
 })
 
 app.get('/', (req, res) =>{
