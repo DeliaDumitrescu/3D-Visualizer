@@ -172,6 +172,11 @@ app.get('/register', (req, res) => {
   res.render("pages/register", data);
 })
 
+app.post('/register', (req, res) => {
+  insertUser(req.body.username, req.body.password);
+  res.redirect('/');
+})
+
 
 // render the profile of an user
 app.get('/profile/:user/', (req,res) => {
@@ -224,7 +229,6 @@ app.get('/', (req, res) =>{
 
   if ( req.user ){
     loggedMessage = "You're logged in as " + JSON.stringify(t.username);
-    console.log(t.username);
     data = {
       username: t.username
     }
