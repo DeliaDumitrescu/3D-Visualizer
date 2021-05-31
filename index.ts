@@ -1,13 +1,11 @@
 import express from 'express';
 import formidable from 'formidable';
 import fs from 'fs';
-
-//var PouchDB = require('pouchdb');
-//var db = new PouchDB('my_database');
+let ejs = require('ejs');
 
 // rest of the code remains same
 const app = express();
-const PORT = 80;
+const PORT = 8080;
 
 
 
@@ -70,7 +68,10 @@ app.post('/login',
 );
 
 app.get('/login', (req,res) => {
-  res.render("pages/login", {})
+  let data = {
+    formButtonName: "Login"
+  }
+  res.render("pages/login", data)
 })
 
 app.get('/logout', function(req, res){
@@ -135,9 +136,13 @@ app.post('/fileupload', (req,res) => {
   });
 })
 
-app.get('/register', (req,res) => {
-  res.send("Aici ar trebui sa te inregistrezi.")
+app.get('/register', (req, res) => {
+  let data = {
+    formButtonName: "Register"
+  }
+  res.render("pages/register", data);
 })
+
 
 // render the profile of an user
 app.get('/profile/:user/', (req,res) => {
@@ -179,6 +184,10 @@ app.get("/model/:user/:modelId", (req, res) => {
 })
 */
 
+app.post("/search", (req, res) => {
+  
+})
+
 app.get('/', (req, res) =>{
 
   let ejs = require('ejs');
@@ -196,7 +205,7 @@ app.get('/', (req, res) =>{
 
   let html = ejs.render('<%= loggedMessage %> </br> For more, click <a href="viewer.html">here</a>.<br> <a href="login">Login</a> <br> <a href="/logout">Logout</a>', {loggedMessage: loggedMessage});
 
-  res.send(html)
+  res.render("pages/index");
 }
 );
 app.listen(PORT, () => {
