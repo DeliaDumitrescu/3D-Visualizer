@@ -7,12 +7,86 @@ let ejs = require('ejs');
 const app = express();
 const PORT = 8080;
 
+
+
+
+
+
+
+
+
+
+// PASSPORT JS PART
+var passport = require('passport');
+var Strategy = require('passport-local').Strategy;
+var session = require('express-session');
+var cookieSession = require('cookie-session');
+var cookieParser = require('cookie-parser');
+
+passport.serializeUser(function(user :any, done :any) {
+  //console.log("serialization")
+  //console.log(JSON.stringify(user))
+  done(null, JSON.stringify(user));
+});
+
+passport.deserializeUser(function(user :any, done :any) {
+  //console.log("Deserialization")
+  //console.log(user)
+  done(null, JSON.parse(user)); // TODO : handle deserialization if parsing fails ( weird cookie input )
+});
+
+app.use(cookieParser('secret'));
+app.use(cookieSession({signed:false}));
+app.use(session({ secret: 'anything' }));
+
+app.use(require('body-parser').urlencoded({ extended: true }));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.set('view engine', 'ejs');
 app.use(express.static('public'))
 
-var PouchDB = require('pouchdb');
-PouchDB.plugin(require('pouchdb-upsert'));
-var db = new PouchDB('users');
+function findUser(username : any, cb :any){
+  cb(null, {username: username, password:"antonio"})
+  // TODO : implement this with files / database
+}
+
+passport.use(new Strategy(
+  function(username : any, password : any, cb : any) {
+    findUser(username, function(err : any, user : any) {
+      if (err) { return cb(err); }
+      if (!user) { return cb(null, false); }
+      if (user.password != password) { return cb(null, false); }
+      return cb(null, user);
+    });
+  }));
+
+app.post('/login',
+  passport.authenticate('local', { successRedirect: '/',
+                                   failureRedirect: '/login'})
+);
+
+app.get('/login', (req,res) => {
+  let data = {
+    formButtonName: "Login"
+  }
+  res.render("pages/login", data)
+})
+
+app.get('/logout', function(req, res){
+  req.logout();
+  res.redirect('/');
+});
+
+// END OF PASSPORT JS
+
+
+
+
+
+
+
 
 app.get('/watch', (req,res) => {
   let videoID = req.query["v"]
@@ -62,6 +136,14 @@ app.post('/fileupload', (req,res) => {
   });
 })
 
+app.get('/register', (req, res) => {
+  let data = {
+    formButtonName: "Register"
+  }
+  res.render("pages/register", data);
+})
+
+
 // render the profile of an user
 app.get('/profile/:user/', (req,res) => {
 
@@ -106,24 +188,22 @@ app.post("/search", (req, res) => {
   
 })
 
-app.get('/login', (req, res) => {
-  let data = {
-    formButtonName: "Login"
-  }
-  res.render("pages/login", data);
-})
-
-app.get('/register', (req, res) => {
-  let data = {
-    formButtonName: "Register"
-  }
-  res.render("pages/register", data);
-})
-
 app.get('/', (req, res) =>{
 
-  let people = ['antonio', 'delia', 'liviu', 'silviu'];
-  // let html = ejs.render('<%= people.join(", "); %> </br> For more, click <a href="viewer.html">HERE</a>. <br> For LOGIN WITH FACEBOOK, click <a href="/auth/facebook"> HERE </a>.  <br> For LOGOUT, click <a href="/logout"> HERE </a>. <br> To test if logged in, click <a href="/test"> HERE </a>.' , {people: people});
+  let ejs = require('ejs');
+
+  let t : any = req.user
+  let loggedMessage = ""
+
+  if ( req.user ){
+    loggedMessage = "You're logged in as " + JSON.stringify(t.username);
+  }
+  
+  if ( !req.user ){
+    loggedMessage = "You are not logged in. Login at localhost/login";
+  }
+
+  let html = ejs.render('<%= loggedMessage %> </br> For more, click <a href="viewer.html">here</a>.<br> <a href="login">Login</a> <br> <a href="/logout">Logout</a>', {loggedMessage: loggedMessage});
 
   res.render("pages/index");
 }
