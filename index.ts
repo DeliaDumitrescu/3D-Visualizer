@@ -10,8 +10,63 @@ const PORT = 8080;
 
 
 
+// SQLITE PART
+const sqlite3 = require('sqlite3').verbose();
 
+var dir = './database';
+if (!fs.existsSync(dir)){
+    fs.mkdirSync(dir);
+}
 
+let sqldb = new sqlite3.Database('./database/users.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err: any) => {
+  if (err) {
+    return console.error(err.message);
+  }
+  console.log('Connected to the SQlite database.');
+
+  sqldb.serialize(() => {
+
+    sqldb.run(`CREATE TABLE IF NOT EXISTS "users" (
+      "username"	TEXT NOT NULL UNIQUE,
+      "password"	TEXT NOT NULL
+    );`)
+  
+    console.log("sqlite db init'd")
+  });
+});
+
+// TODO : use this to register users.
+function insertUser(username: string, password: string){
+  sqldb.serialize(() => {
+		sqldb.run(`INSERT INTO "main"."users"("username","password") VALUES (?,?);`, username, password, function (err : any){
+			if (err) {
+				console.log (err)
+			}
+		})
+	});
+}
+
+function findUser(username : any, cb :any){
+  sqldb.serialize(() => {
+		sqldb.all(`SELECT * FROM users WHERE username=? LIMIT 1;`, username, (err: any, rows : any) => {
+		  if (err) {
+			console.error(err.message);
+			cb("error sqlite", "error sqlite")
+		  }
+		  else{
+         //console.log(rows);
+         //console.log(rows.length);
+         if (rows.length == 1){
+          cb(null, rows[0]);
+         }
+         else{
+           cb("error : not registered", "not registered");
+         }
+		  }
+		});
+	});
+}
+// END OF SQLITE PART
 
 
 
@@ -46,11 +101,6 @@ app.use(passport.session());
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'))
-
-function findUser(username : any, cb :any){
-  cb(null, {username: username, password:"antonio"})
-  // TODO : implement this with files / database
-}
 
 passport.use(new Strategy(
   function(username : any, password : any, cb : any) {
