@@ -133,8 +133,11 @@ app.get('/upload', (req,res) => {
 })
 
 app.post('/fileupload', (req,res) => {
+  if(!req.user) {
+    res.send("You are not logged in.");
+    return;
+  }
   var form = new formidable.IncomingForm();
-
   // When formidable parses files, they are stored in a temp folder.
   // So they have to be moved from the oldPath to the newPath
   // with fs.rename
@@ -149,7 +152,13 @@ app.post('/fileupload', (req,res) => {
     // Use the parsed info created upstream and bound to 'req'.
     // Like : newpath = './public/data/' + req.uuid + ....
     // eg : newpath = './public/data/231239-123921/banana.glb'
-    var newpath = './public/data/' + filename;
+    let t : any = req.user
+    let userDir = './public/data/' + t.username;
+    if (!fs.existsSync(userDir)){
+      fs.mkdirSync(userDir);
+    }
+
+    var newpath = userDir + "/" + filename;
 
     //console.log( oldpath + " ->>> " + newpath)
     console.log("File uploaded in " + newpath)
