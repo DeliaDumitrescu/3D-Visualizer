@@ -1,12 +1,7 @@
 import express from 'express';
 import formidable from 'formidable';
 import fs from 'fs';
-import passport from "passport";
-import strategy from "passport-facebook";
-import session from "cookie-session"
-import dotenv from "dotenv";
-
-dotenv.config();
+let ejs = require('ejs');
 
 // rest of the code remains same
 const app = express();
@@ -15,69 +10,9 @@ const PORT = 8080;
 app.set('view engine', 'ejs');
 app.use(express.static('public'))
 
-const FacebookStrategy = strategy.Strategy;
-const cookieSession = session;
-
 var PouchDB = require('pouchdb');
 PouchDB.plugin(require('pouchdb-upsert'));
 var db = new PouchDB('users');
-
-app.use(cookieSession({
-  name: 'facebook-auth-session',
-  secret: 'secret'
-}))
-app.use(passport.initialize());
-app.use(passport.session());
-
-passport.serializeUser(function (user, done) {
-  done(null, user);
-});
-
-passport.deserializeUser(function (obj, done) {
-  done(null, obj as any);
-});
-
-const clientID = process.env.FACEBOOK_CLIENT_ID
-const clientSecret = process.env.FACEBOOK_CLIENT_SECRET
-const callbackURL = process.env.FACEBOOK_CALLBACK_URL
-if(!clientID || !clientSecret || !callbackURL) {
-  throw new Error('Env not set up');
-}
-
-passport.use(new FacebookStrategy({
-  clientID: clientID,
-  clientSecret: clientSecret,
-  callbackURL: callbackURL
-}, function (accessToken, refreshToken, profile, done) {
-  //console.log(profile)
-  db.putIfNotExists(profile.id, {displayName: profile.displayName}).then(function (res: any) {
-    console.log(res)
-  }).catch(function (err: any) {
-    console.log(":(")
-  });
-  return done(null, profile);
-}
-));
-
-app.get('/auth/facebook', passport.authenticate('facebook'));
-
-app.get('/auth/facebook/callback',
-  passport.authenticate('facebook', {
-    successRedirect: '/',
-    failureRedirect: '/login'
-  }));
-
-app.get('/test', (req, res) => {
-  console.log(req.user);
-  res.send(req.user);
-})
-
-app.get('/logout', (req,res) => {
-  req.session = null;
-  req.logout();
-  console.log(req.user);
-  res.redirect('/');
-})
 
 app.get('/watch', (req,res) => {
   let videoID = req.query["v"]
@@ -167,13 +102,20 @@ app.get("/model/:user/:modelId", (req, res) => {
 })
 */
 
+app.get('/login', (req, res) => {
+  res.render("pages/login");
+})
+
+app.get('/register', (req, res) => {
+  res.render("pages/register");
+})
+
 app.get('/', (req, res) =>{
 
-  let ejs = require('ejs');
   let people = ['antonio', 'delia', 'liviu', 'silviu'];
-  let html = ejs.render('<%= people.join(", "); %> </br> For more, click <a href="viewer.html">HERE</a>. <br> For LOGIN WITH FACEBOOK, click <a href="/auth/facebook"> HERE </a>.  <br> For LOGOUT, click <a href="/logout"> HERE </a>. <br> To test if logged in, click <a href="/test"> HERE </a>.' , {people: people});
+  // let html = ejs.render('<%= people.join(", "); %> </br> For more, click <a href="viewer.html">HERE</a>. <br> For LOGIN WITH FACEBOOK, click <a href="/auth/facebook"> HERE </a>.  <br> For LOGOUT, click <a href="/logout"> HERE </a>. <br> To test if logged in, click <a href="/test"> HERE </a>.' , {people: people});
 
-  res.send(html)
+  res.render("pages/index");
 }
 );
 app.listen(PORT, () => {
