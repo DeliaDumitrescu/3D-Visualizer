@@ -227,32 +227,62 @@ app.get("/model/:user/:modelId", (req, res) => {
 })
 */
 
+function getUsersWithSubstring(substring : any, cb : any) {
+  let searchString = substring;
+  console.log(`SELECT username FROM users WHERE username LIKE \'%` + substring + "%\';");
+  sqldb.serialize(() => {
+		sqldb.all(`SELECT username FROM users WHERE username LIKE \'%` + substring + "%\';", (err: any, rows : any) => {
+		  if (err) {
+			console.error(err.message);
+			}
+		  else{
+         cb(rows);
+		  }
+		});
+	});
+}
+
 app.post("/search", (req, res) => {
-  
+  let search = req.body.searchdata;
+  res.redirect("/?search=" + search);
 })
 
-app.get('/', (req, res) =>{
-  let t : any = req.user
-  let loggedMessage = ""
-  let data;
+app.get('/', (req, res) => {
 
-  if ( req.user ){
-    loggedMessage = "You're logged in as " + JSON.stringify(t.username);
-    data = {
-      username: t.username
-    }
+  let userSearch = "";
+  if(req.query.search) {
+    let t : any = req.query.search;
+    userSearch = t;
   }
+  getUsersWithSubstring(userSearch, (rows : any) => {
+
+    let t : any = req.user
+    let loggedMessage = ""
+    let data;
+
+    let usernames = []
+    for (let i = 0; i < rows.length; i++) {
+      usernames.push(rows[i].username);
+    }
   
-  if ( !req.user ){
-    loggedMessage = "You are not logged in. Login at localhost/login";
-    data = {
-      username: null
+    if ( req.user ){
+      loggedMessage = "You're logged in as " + JSON.stringify(t.username);
+      data = {
+        username: t.username,
+        profiles: usernames
+      }
     }
-  }
+    
+    if ( !req.user ){
+      loggedMessage = "You are not logged in. Login at localhost/login";
+      data = {
+        username: null,
+        profiles: usernames
+      }
+    }
 
-  let html = ejs.render('<%= loggedMessage %> </br> For more, click <a href="viewer.html">here</a>.<br> <a href="login">Login</a> <br> <a href="/logout">Logout</a>', {loggedMessage: loggedMessage});
-
-  res.render("pages/index", data);
+    res.render("pages/index", data);
+  })
 }
 );
 app.listen(PORT, () => {
