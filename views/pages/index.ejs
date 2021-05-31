@@ -10,7 +10,7 @@
     <link href="/css/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-    <%- include('../partials/navbar', {}); %>
+    <%- include('../partials/navbar', {username: username}); %>
 
     <form action="/search" method="post">
     <div class="space">

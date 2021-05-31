@@ -2,7 +2,9 @@
     <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="#">My profile</a>
+                <% if(username != null) {%>
+                <a class="nav-link" href="/profile/<%= username %>">My profile</a>
+                <% } %>
             </li>
         </ul>
     </div>
@@ -14,12 +16,18 @@
     </div>
     <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
         <ul class="navbar-nav ml-auto">
+            <% if(username == null) {%>
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/register">Register</a>
+                </li>
+            <% } else {%>
             <li class="nav-item">
-                <a class="nav-link" href="/login">Login</a>
+                <a class="nav-link" href="/logout">Logout</a>   
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/register">Register</a>
-            </li>
+            <% }%>
         </ul>
     </div>
 </nav>

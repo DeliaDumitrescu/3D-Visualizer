@@ -7,15 +7,6 @@ let ejs = require('ejs');
 const app = express();
 const PORT = 8080;
 
-
-
-
-
-
-
-
-
-
 // PASSPORT JS PART
 var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
@@ -69,7 +60,8 @@ app.post('/login',
 
 app.get('/login', (req,res) => {
   let data = {
-    formButtonName: "Login"
+    formButtonName: "Login",
+    username: null
   }
   res.render("pages/login", data)
 })
@@ -78,25 +70,6 @@ app.get('/logout', function(req, res){
   req.logout();
   res.redirect('/');
 });
-
-// END OF PASSPORT JS
-
-
-
-
-
-
-
-
-app.get('/watch', (req,res) => {
-  let videoID = req.query["v"]
-
-  let ejs = require('ejs');
-  let html = ejs.render('Salutare, vad ca vrei sa te uiti la <b>videoul</b> asta <%= videoID %> , se pare.', {videoID: videoID});
-
-  res.send(html)
-  
-})
 
 // This simply returns a fileupload html form on GET /upload
 app.get('/upload', (req,res) => {
@@ -138,7 +111,8 @@ app.post('/fileupload', (req,res) => {
 
 app.get('/register', (req, res) => {
   let data = {
-    formButtonName: "Register"
+    formButtonName: "Register",
+    username: null
   }
   res.render("pages/register", data);
 })
@@ -189,23 +163,28 @@ app.post("/search", (req, res) => {
 })
 
 app.get('/', (req, res) =>{
-
-  let ejs = require('ejs');
-
   let t : any = req.user
   let loggedMessage = ""
+  let data;
 
   if ( req.user ){
     loggedMessage = "You're logged in as " + JSON.stringify(t.username);
+    console.log(t.username);
+    data = {
+      username: t.username
+    }
   }
   
   if ( !req.user ){
     loggedMessage = "You are not logged in. Login at localhost/login";
+    data = {
+      username: null
+    }
   }
 
   let html = ejs.render('<%= loggedMessage %> </br> For more, click <a href="viewer.html">here</a>.<br> <a href="login">Login</a> <br> <a href="/logout">Logout</a>', {loggedMessage: loggedMessage});
 
-  res.render("pages/index");
+  res.render("pages/index", data);
 }
 );
 app.listen(PORT, () => {
