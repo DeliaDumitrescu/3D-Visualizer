@@ -50,7 +50,7 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'))
 
 function findUser(username : any, cb :any){
-  cb(null, {username: "antonio", password:"antonio"})
+  cb(null, {username: username, password:"antonio"})
   // TODO : implement this with files / database
 }
 
