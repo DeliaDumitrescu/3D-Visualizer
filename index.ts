@@ -42,22 +42,22 @@ function insertUser(username: string, password: string){
 	});
 }
 
-function findUser(username : any, cb :any){
+function findUser(username: any, cb: any){
   sqldb.serialize(() => {
 		sqldb.all(`SELECT * FROM users WHERE username=? LIMIT 1;`, username, (err: any, rows : any) => {
 		  if (err) {
-			console.error(err.message);
-			cb("error sqlite", "error sqlite")
+        console.error(err.message);
+        cb("error sqlite", "error sqlite")
 		  }
-		  else{
-         //console.log(rows);
-         //console.log(rows.length);
-         if (rows.length == 1){
+		  else {
+        //console.log(rows);
+        //console.log(rows.length);
+        if (rows.length == 1) {
           cb(null, rows[0]);
-         }
-         else{
-           cb("error : not registered", "not registered");
-         }
+        }
+        else {
+          cb("error : not registered", "not registered");
+        }
 		  }
 		});
 	});
@@ -129,7 +129,12 @@ app.get('/logout', function(req, res){
 // This simply returns a fileupload html form on GET /upload
 app.get('/upload', (req,res) => {
   // TODO: move this into an ejs partial.
-  res.send('<form action="fileupload" method="post" enctype="multipart/form-data"><input type="file" name="filetoupload"><br><input type="submit"></form>');
+  // res.send('<form action="fileupload" method="post" enctype="multipart/form-data"><input type="file" name="filetoupload"><br><input type="submit"></form>');
+  let data = {
+    formButtonName: "Upload",
+    username: null
+  }
+  res.render("pages/upload", data);
 })
 
 app.post('/fileupload', (req,res) => {
