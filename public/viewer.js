@@ -5,7 +5,7 @@ const createScene =  () => {
     const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0));
     //const box = BABYLON.MeshBuilder.CreateBox("box", {});
 
-    BABYLON.SceneLoader.ImportMeshAsync("", "/", "barilla-optimized.glb"); //empty string all meshes
+    BABYLON.SceneLoader.ImportMeshAsync("", "/", modelName); //empty string all meshes
 
 
     return scene;

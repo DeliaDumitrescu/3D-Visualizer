@@ -28,7 +28,8 @@ let sqldb = new sqlite3.Database('./database/users.db', sqlite3.OPEN_READWRITE |
       "email"     TEXT NOT NULL,
       "phone"     TEXT NOT NULL,
       "address"   TEXT NOT NULL,
-      "password"	TEXT NOT NULL
+      "password"	TEXT NOT NULL,
+      "sex" TEXT NOT NULL
     );`)
   
     console.log("sqlite db init'd")
@@ -36,9 +37,9 @@ let sqldb = new sqlite3.Database('./database/users.db', sqlite3.OPEN_READWRITE |
 });
 
 // TODO : use this to register users.
-function insertUser(username: string, email: string, phone: string, address: string, password: string){
+function insertUser(username: string, email: string, phone: string, address: string, password: string, sex: string){
   sqldb.serialize(() => {
-		sqldb.run(`INSERT INTO "main"."users"("username", "email", "phone", "address","password") VALUES (?,?,?,?,?);`, username, email, phone, address, password, function (err : any){
+		sqldb.run(`INSERT INTO "main"."users"("username", "email", "phone", "address","password", "sex") VALUES (?,?,?,?,?,?);`, username, email, phone, address, password, sex, function (err : any){
 			if (err) {
 				console.log (err)
 			}
@@ -191,7 +192,7 @@ app.get('/register', (req, res) => {
 })
 
 app.post('/register', (req, res) => {
-  insertUser(req.body.username, req.body.email, req.body.phone, req.body.address, req.body.password);
+  insertUser(req.body.username, req.body.email, req.body.phone, req.body.address, req.body.password, req.body.sex);
   res.redirect('/');
 })
 
@@ -218,6 +219,33 @@ app.get('/profile/:user/', (req,res) => {
   
     res.render("pages/profile", pageData)
   })
+})
+
+app.get('/delete/:user/:filename', (req, res) => {
+  let username = req.params["user"]
+  let filename = req.params["filename"]
+
+  try {
+    fs.unlinkSync("./public/data/" + username + "/" + filename);
+  } catch(err) {
+    console.error(err)
+  }
+
+  // res.render("pages/profile", pageData)
+  res.redirect("/profile/" + username);
+
+})
+
+app.get('/show/:user/:filename', (req, res) => {
+  let username = req.params["user"]
+  let filename = req.params["filename"]
+  let pageData = {
+    username: username,
+    filename: filename
+  };
+
+  res.render("pages/viewer", pageData);
+
 })
 /*
 // returns the specified model of a user
