@@ -1,6 +1,7 @@
 import express from 'express';
 import formidable from 'formidable';
 import fs from 'fs';
+import { use } from 'passport';
 let ejs = require('ejs');
 
 // rest of the code remains same
@@ -24,6 +25,9 @@ let sqldb = new sqlite3.Database('./database/users.db', sqlite3.OPEN_READWRITE |
 
     sqldb.run(`CREATE TABLE IF NOT EXISTS "users" (
       "username"	TEXT NOT NULL UNIQUE,
+      "email"     TEXT NOT NULL,
+      "phone"     TEXT NOT NULL,
+      "address"   TEXT NOT NULL,
       "password"	TEXT NOT NULL
     );`)
   
@@ -32,9 +36,9 @@ let sqldb = new sqlite3.Database('./database/users.db', sqlite3.OPEN_READWRITE |
 });
 
 // TODO : use this to register users.
-function insertUser(username: string, password: string){
+function insertUser(username: string, email: string, phone: string, address: string, password: string){
   sqldb.serialize(() => {
-		sqldb.run(`INSERT INTO "main"."users"("username","password") VALUES (?,?);`, username, password, function (err : any){
+		sqldb.run(`INSERT INTO "main"."users"("username", "email", "phone", "address","password") VALUES (?,?,?,?,?);`, username, email, phone, address, password, function (err : any){
 			if (err) {
 				console.log (err)
 			}
@@ -187,7 +191,7 @@ app.get('/register', (req, res) => {
 })
 
 app.post('/register', (req, res) => {
-  insertUser(req.body.username, req.body.password);
+  insertUser(req.body.username, req.body.email, req.body.phone, req.body.address, req.body.password);
   res.redirect('/');
 })
 
@@ -197,19 +201,23 @@ app.get('/profile/:user/', (req,res) => {
 
   let username = req.params["user"]
 
-  const modelsFolder = 'public/data/' + username;
-  const fs = require('fs');
-  let models : string[] = [];
+  findUser(username, (err: any, row: any) => {
+    console.log(row);
+
+    const modelsFolder = 'public/data/' + username;
+    const fs = require('fs');
+    let models : string[] = [];
+    
+    if (fs.existsSync(modelsFolder))
+      models = fs.readdirSync(modelsFolder);
   
-  if (fs.existsSync(modelsFolder))
-    models = fs.readdirSync(modelsFolder);
-
-  let pageData = {
-    username: username,
-    models: models
-  };
-
-  res.render("pages/profile", pageData)
+    let pageData = {
+      profileData: row,
+      models: models
+    };
+  
+    res.render("pages/profile", pageData)
+  })
 })
 /*
 // returns the specified model of a user
