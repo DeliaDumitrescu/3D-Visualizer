@@ -5,6 +5,7 @@ const createScene = (canvas, engine, modelName) => {
 
         camera.attachControl(canvas, true);
         const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0));
+        scene.clearColor = new BABYLON.Color3(1.0, 1.0, 1.0);
 
         BABYLON.SceneLoader.ImportMeshAsync("", "/", "data/" + modelName);
     
