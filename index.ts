@@ -1,6 +1,7 @@
 import express from 'express';
 import formidable from 'formidable';
 import fs from 'fs';
+import { use } from 'passport';
 let ejs = require('ejs');
 
 // rest of the code remains same
@@ -24,7 +25,11 @@ let sqldb = new sqlite3.Database('./database/users.db', sqlite3.OPEN_READWRITE |
 
     sqldb.run(`CREATE TABLE IF NOT EXISTS "users" (
       "username"	TEXT NOT NULL UNIQUE,
-      "password"	TEXT NOT NULL
+      "email"     TEXT NOT NULL,
+      "phone"     TEXT NOT NULL,
+      "address"   TEXT NOT NULL,
+      "password"	TEXT NOT NULL,
+      "sex" TEXT NOT NULL
     );`)
   
     console.log("sqlite db init'd")
@@ -32,9 +37,9 @@ let sqldb = new sqlite3.Database('./database/users.db', sqlite3.OPEN_READWRITE |
 });
 
 // TODO : use this to register users.
-function insertUser(username: string, password: string){
+function insertUser(username: string, email: string, phone: string, address: string, password: string, sex: string){
   sqldb.serialize(() => {
-		sqldb.run(`INSERT INTO "main"."users"("username","password") VALUES (?,?);`, username, password, function (err : any){
+		sqldb.run(`INSERT INTO "main"."users"("username", "email", "phone", "address","password", "sex") VALUES (?,?,?,?,?,?);`, username, email, phone, address, password, sex, function (err : any){
 			if (err) {
 				console.log (err)
 			}
@@ -42,22 +47,22 @@ function insertUser(username: string, password: string){
 	});
 }
 
-function findUser(username : any, cb :any){
+function findUser(username: any, cb: any){
   sqldb.serialize(() => {
 		sqldb.all(`SELECT * FROM users WHERE username=? LIMIT 1;`, username, (err: any, rows : any) => {
 		  if (err) {
-			console.error(err.message);
-			cb("error sqlite", "error sqlite")
+        console.error(err.message);
+        cb("error sqlite", "error sqlite")
 		  }
-		  else{
-         //console.log(rows);
-         //console.log(rows.length);
-         if (rows.length == 1){
+		  else {
+        //console.log(rows);
+        //console.log(rows.length);
+        if (rows.length == 1) {
           cb(null, rows[0]);
-         }
-         else{
-           cb("error : not registered", "not registered");
-         }
+        }
+        else {
+          cb("error : not registered", "not registered");
+        }
 		  }
 		});
 	});
@@ -129,7 +134,12 @@ app.get('/logout', function(req, res){
 // This simply returns a fileupload html form on GET /upload
 app.get('/upload', (req,res) => {
   // TODO: move this into an ejs partial.
-  res.send('<form action="fileupload" method="post" enctype="multipart/form-data"><input type="file" name="filetoupload"><br><input type="submit"></form>');
+  // res.send('<form action="fileupload" method="post" enctype="multipart/form-data"><input type="file" name="filetoupload"><br><input type="submit"></form>');
+  let data = {
+    formButtonName: "Upload",
+    username: null
+  }
+  res.render("pages/upload", data);
 })
 
 app.post('/fileupload', (req,res) => {
@@ -182,7 +192,7 @@ app.get('/register', (req, res) => {
 })
 
 app.post('/register', (req, res) => {
-  insertUser(req.body.username, req.body.password);
+  insertUser(req.body.username, req.body.email, req.body.phone, req.body.address, req.body.password, req.body.sex);
   res.redirect('/');
 })
 
@@ -192,19 +202,50 @@ app.get('/profile/:user/', (req,res) => {
 
   let username = req.params["user"]
 
-  const modelsFolder = 'public/data/' + username;
-  const fs = require('fs');
-  let models : string[] = [];
-  
-  if (fs.existsSync(modelsFolder))
-    models = fs.readdirSync(modelsFolder);
+  findUser(username, (err: any, row: any) => {
+    console.log(row);
 
+    const modelsFolder = 'public/data/' + username;
+    const fs = require('fs');
+    let models : string[] = [];
+    
+    if (fs.existsSync(modelsFolder))
+      models = fs.readdirSync(modelsFolder);
+  
+    let pageData = {
+      profileData: row,
+      models: models
+    };
+  
+    res.render("pages/profile", pageData)
+  })
+})
+
+app.get('/delete/:user/:filename', (req, res) => {
+  let username = req.params["user"]
+  let filename = req.params["filename"]
+
+  try {
+    fs.unlinkSync("./public/data/" + username + "/" + filename);
+  } catch(err) {
+    console.error(err)
+  }
+
+  // res.render("pages/profile", pageData)
+  res.redirect("/profile/" + username);
+
+})
+
+app.get('/show/:user/:filename', (req, res) => {
+  let username = req.params["user"]
+  let filename = req.params["filename"]
   let pageData = {
     username: username,
-    models: models
+    filename: filename
   };
 
-  res.render("pages/profile", pageData)
+  res.render("pages/viewer", pageData);
+
 })
 /*
 // returns the specified model of a user
