@@ -65,6 +65,7 @@ function findUser(username: any, cb: any){
         }
         else {
           cb("error : not registered", "not registered");
+          // console.log("not reg")
         }
 		  }
 		});
@@ -126,11 +127,17 @@ app.get('/login', (req,res) => {
     formButtonName: "Login",
     username: null,
     emailMessage: "",
+    emailValue: "",
     usernameMessage: "",
+    usernameValue: "",
     phoneMessage: "",
+    phoneValue: "",
     addressMessage: "",
+    addressValue: "",
     sexMessage: "",
-    passwordMessage: ""
+    sexValue: "",
+    passwordMessage: "",
+    passwordValue: ""
   }
   res.render("pages/login", data)
 })
@@ -195,13 +202,19 @@ app.post('/fileupload', (req,res) => {
 app.get('/register', (req, res) => {
   let data = {
     formButtonName: "Register",
-    username: null, 
+    username: null,
     emailMessage: "",
+    emailValue: "",
     usernameMessage: "",
+    usernameValue: "",
     phoneMessage: "",
+    phoneValue: "",
     addressMessage: "",
+    addressValue: "",
     sexMessage: "",
-    passwordMessage: ""
+    sexValue: "",
+    passwordMessage: "",
+    passwordValue: ""
   }
   res.render("pages/register", data);
 })
@@ -212,11 +225,17 @@ app.post('/register', (req, res) => {
     formButtonName: "Register",
     username: null,
     emailMessage: "",
+    emailValue: req.body.email,
     usernameMessage: "",
+    usernameValue: req.body.username,
     phoneMessage: "",
+    phoneValue: req.body.phone,
     addressMessage: "",
+    addressValue: req.body.address,
     sexMessage: "",
-    passwordMessage: ""
+    sexValue: req.body.sex,
+    passwordMessage: "",
+    passwordValue: req.body.password
   };
 
   if(!validator.isAlphanumeric(req.body.username)) {
