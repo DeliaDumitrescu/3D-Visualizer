@@ -309,6 +309,12 @@ app.get('/profile/:user/', (req,res) => {
 
   let username = req.params["user"]
 
+  let loggedUser : any = null;
+
+  if ( req.user ){
+    loggedUser = (<any>req.user).username;
+  }
+
   findUser(username, (err: any, row: any) => {
     console.log(row);
 
@@ -321,7 +327,8 @@ app.get('/profile/:user/', (req,res) => {
   
     let pageData = {
       profileData: row,
-      models: models
+      models: models,
+      loggedUser : loggedUser
     };
   
     res.render("pages/profile", pageData)

@@ -83,7 +83,7 @@
                         <div class="card-body">
                           <h5 class="card-title"> <%= model %></h5>
                           <a href="/show/<%= profileData.username %>/<%= model %>" class="btn btn-primary">Show</a>
-                          <a href="/delete/<%= profileData.username %>/<%= model %>" class="btn btn-primary">Delete</a>
+                          <% if (loggedUser==profileData.username) { %><a href="/delete/<%= profileData.username %>/<%= model %>" class="btn btn-primary">Delete</a> <% } %>
                         </div>
                       </div><br>
                 <% }); %>
