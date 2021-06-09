@@ -113,7 +113,7 @@ app.use(express.static('public'))
 passport.use(new Strategy(
   function(username : any, password : any, cb : any) {
     findUser(username, function(err : any, user : any) {
-      if (err) { return cb(err); }
+      if (err) { return cb(null); }
       if (!user) { return cb(null, false); }
       if (user.password != password) { return cb(null, false); }
       return cb(null, user);
