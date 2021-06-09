@@ -40,12 +40,15 @@ let sqldb = new sqlite3.Database('./database/users.db', sqlite3.OPEN_READWRITE |
 });
 
 // TODO : use this to register users.
-function insertUser(username: string, email: string, phone: string, address: string, password: string, sex: string){
+function insertUser(username: string, email: string, phone: string, address: string, password: string, sex: string, cb : (err : Error | null) => any){
   sqldb.serialize(() => {
 		sqldb.run(`INSERT INTO "main"."users"("username", "email", "phone", "address","password", "sex") VALUES (?,?,?,?,?,?);`, username, email, phone, address, password, sex, function (err : any){
 			if (err) {
 				console.log (err)
-			}
+        cb(err)
+			} else{
+        cb(null)
+      }
 		})
 	});
 }
@@ -267,9 +270,37 @@ app.post('/register', (req, res) => {
     res.render('pages/register', pageData);
   }
   else {
-    insertUser(req.body.username, req.body.email, req.body.phone, req.body.address, req.body.password, req.body.sex);
-    res.redirect('/');
+    insertUser(req.body.username, req.body.email, req.body.phone, req.body.address, req.body.password, req.body.sex,
+      (err) => {
+        if ( err == null ){
+        console.log("TEST")
+    
+        let user = {
+          username : req.body.username,
+          email : req.body.email,
+          phone : req.body.phone,
+          address : req.body.address,
+          password : req.body.password,
+          sex : req.body.sex
+         }
+    
+         console.log(user)
+    
+         req.login(user, function (err) {
+          if ( ! err ){
+              res.redirect('/');
+          } else {
+            res.redirect('/register');
+          }
+         })
+        }
+        else {
+          pageData.usernameMessage = "Username taken!"
+          res.render('pages/register', pageData);
+        }
+      });
   }
+
 })
 
 
