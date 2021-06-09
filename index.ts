@@ -7,6 +7,9 @@ let ejs = require('ejs');
 // rest of the code remains same
 const app = express();
 const PORT = 8080;
+
+var validator = require('validator');
+
 // SQLITE PART
 const sqlite3 = require('sqlite3').verbose();
 
@@ -62,6 +65,7 @@ function findUser(username: any, cb: any){
         }
         else {
           cb("error : not registered", "not registered");
+          // console.log("not reg")
         }
 		  }
 		});
@@ -121,7 +125,19 @@ app.post('/login',
 app.get('/login', (req,res) => {
   let data = {
     formButtonName: "Login",
-    username: null
+    username: null,
+    emailMessage: "",
+    emailValue: "",
+    usernameMessage: "",
+    usernameValue: "",
+    phoneMessage: "",
+    phoneValue: "",
+    addressMessage: "",
+    addressValue: "",
+    sexMessage: "",
+    sexValue: "",
+    passwordMessage: "",
+    passwordValue: ""
   }
   res.render("pages/login", data)
 })
@@ -186,14 +202,74 @@ app.post('/fileupload', (req,res) => {
 app.get('/register', (req, res) => {
   let data = {
     formButtonName: "Register",
-    username: null
+    username: null,
+    emailMessage: "",
+    emailValue: "",
+    usernameMessage: "",
+    usernameValue: "",
+    phoneMessage: "",
+    phoneValue: "",
+    addressMessage: "",
+    addressValue: "",
+    sexMessage: "",
+    sexValue: "",
+    passwordMessage: "",
+    passwordValue: ""
   }
   res.render("pages/register", data);
 })
 
 app.post('/register', (req, res) => {
-  insertUser(req.body.username, req.body.email, req.body.phone, req.body.address, req.body.password, req.body.sex);
-  res.redirect('/');
+  var validData = true;
+  let pageData = {
+    formButtonName: "Register",
+    username: null,
+    emailMessage: "",
+    emailValue: req.body.email,
+    usernameMessage: "",
+    usernameValue: req.body.username,
+    phoneMessage: "",
+    phoneValue: req.body.phone,
+    addressMessage: "",
+    addressValue: req.body.address,
+    sexMessage: "",
+    sexValue: req.body.sex,
+    passwordMessage: "",
+    passwordValue: req.body.password
+  };
+
+  if(!validator.isAlphanumeric(req.body.username)) {
+    pageData.usernameMessage = "Username must contain only letters and numbers"
+    validData = false
+  }
+  if(!validator.isEmail(req.body.email)) {
+    pageData.emailMessage += "Email must be valid"
+    validData = false
+  }
+  if(!validator.isMobilePhone(req.body.phone)) {
+    pageData.phoneMessage += "Phone number must be valid"
+    validData = false
+  }
+  if(validator.isEmpty(req.body.address)) {
+    pageData.addressMessage += "Address should be entered"
+    validData = false
+  }
+  if(!(req.body.sex == "F" || req.body.sex == "M")) {
+    pageData.sexMessage += "Sex must be F or M"
+    validData = false
+  }
+  if(!validator.isStrongPassword(req.body.password)) {
+    pageData.passwordMessage += "Password must have at least 8 characters, a lowercase, an uppercase, a number and a symbol"
+    validData = false
+  }
+  
+  if(!validData) {
+    res.render('pages/register', pageData);
+  }
+  else {
+    insertUser(req.body.username, req.body.email, req.body.phone, req.body.address, req.body.password, req.body.sex);
+    res.redirect('/');
+  }
 })
 
 
