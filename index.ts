@@ -332,10 +332,14 @@ app.get('/delete/:user/:filename', (req, res) => {
   let username = req.params["user"]
   let filename = req.params["filename"]
 
-  try {
-    fs.unlinkSync("./public/data/" + username + "/" + filename);
-  } catch(err) {
-    console.error(err)
+  if ( req.user ){
+    if ( (<any>req.user).username == username ){ //if logged in as the target user, then delete the file, else don't
+      try {
+        fs.unlinkSync("./public/data/" + username + "/" + filename);
+      } catch(err) {
+        console.error(err)
+      }
+    }
   }
 
   // res.render("pages/profile", pageData)
