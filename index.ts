@@ -30,22 +30,18 @@ app.get('/', (req, res) => {
   getUsersWithSubstring(userSearch, (rows : any) => {
     let t : any = req.user;
     let data;
-    let usernames = [];
-    for (let i = 0; i < rows.length; i++) {
-      usernames.push(rows[i].username);
-    }
   
     if (req.user){
       data = {
         username: t.username,
-        profiles: usernames
+        profiles: rows
       };
     }
     
     if (!req.user){
       data = {
         username: null,
-        profiles: usernames
+        profiles: rows
       };
     }
     res.render("pages/index", data);

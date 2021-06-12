@@ -72,7 +72,7 @@ export function deleteUser(username : string){
 
 export function getUsersWithSubstring(substring : any, cb : any) {
     sqldb.serialize(() => {
-        sqldb.all(`SELECT username FROM users WHERE username LIKE \'%` + substring + "%\';", (err: any, rows : any) => {
+        sqldb.all(`SELECT username, sex FROM users WHERE username LIKE \'%` + substring + "%\';", (err: any, rows : any) => {
         if (err) {
             console.error(err.message);
         }
