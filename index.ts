@@ -1,12 +1,3 @@
-/* Code standards
--> camelCase variables and functions
--> upperCase for global variables
--> spaces around operators
--> indentation
--> end a simple statement with a semicolon
--> line length < 80
-*/
-
 import express from 'express';
 import { linkMiddleware } from './auth';
 import { getUsersWithSubstring } from './database';
@@ -23,7 +14,7 @@ modelsMiddleware(app);
 app.post("/search", (req, res) => {
   let search = req.body.searchdata;
   res.redirect("/?search=" + search);
-})
+});
 
 app.get('/', (req, res) => {
   let userSearch = "";
@@ -32,9 +23,9 @@ app.get('/', (req, res) => {
     userSearch = t;
   }
   getUsersWithSubstring(userSearch, (rows : any) => {
-    let t : any = req.user
+    let t : any = req.user;
     let data;
-    let usernames = []
+    let usernames = [];
     for (let i = 0; i < rows.length; i++) {
       usernames.push(rows[i].username);
     }
@@ -43,19 +34,18 @@ app.get('/', (req, res) => {
       data = {
         username: t.username,
         profiles: usernames
-      }
+      };
     }
     
     if (!req.user){
       data = {
         username: null,
         profiles: usernames
-      }
+      };
     }
     res.render("pages/index", data);
   })
-}
-);
+});
 
 app.listen(PORT, () => {
   console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);

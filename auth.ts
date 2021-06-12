@@ -18,14 +18,15 @@ export function linkMiddleware(app: any) {
     app.use(express.static('public'));
 
     passport.use(new Strategy(
-    function(username : any, password : any, cb : any) {
-        findUser(username, function(err : any, user : any) {
-        if (err) { return cb(null); }
-        if (!user) { return cb(null, false); }
-        if (user.password != password) { return cb(null, false); }
-            return cb(null, user);
-        });
-    }));
+        function(username : any, password : any, cb : any) {
+            findUser(username, function(err : any, user : any) {
+            if (err) { return cb(null); }
+            if (!user) { return cb(null, false); }
+            if (user.password != password) { return cb(null, false); }
+                return cb(null, user);
+            });
+        }
+    ));
       
     passport.serializeUser(function(user :any, done :any) {
         done(null, JSON.stringify(user));
@@ -62,9 +63,9 @@ function loginMiddleware(app: any) {
             sexValue: "",
             passwordMessage: "",
             passwordValue: ""
-        }
-        res.render("pages/login", data)
-    })
+        };
+        res.render("pages/login", data);
+    });
 }
 
 function registerMiddleware(app: any) {
@@ -84,9 +85,9 @@ function registerMiddleware(app: any) {
             sexValue: "",
             passwordMessage: "",
             passwordValue: ""
-            }
-            res.render("pages/register", data);
-    })
+        };
+        res.render("pages/register", data);
+    });
         
     app.post('/register', (req: any, res: any) => {
         var validData = true;
@@ -108,28 +109,28 @@ function registerMiddleware(app: any) {
         };
         
         if(!validator.isAlphanumeric(req.body.username)) {
-            pageData.usernameMessage = "Username must contain only letters and numbers"
-            validData = false
+            pageData.usernameMessage = "Username must contain only letters and numbers";
+            validData = false;
         }
         if(!validator.isEmail(req.body.email)) {
-            pageData.emailMessage += "Email must be valid"
-            validData = false
+            pageData.emailMessage += "Email must be valid";
+            validData = false;
         }
         if(!validator.isMobilePhone(req.body.phone)) {
-            pageData.phoneMessage += "Phone number must be valid"
-            validData = false
+            pageData.phoneMessage += "Phone number must be valid";
+            validData = false;
         }
         if(validator.isEmpty(req.body.address)) {
-            pageData.addressMessage += "Address should be entered"
-            validData = false
+            pageData.addressMessage += "Address should be entered";
+            validData = false;
         }
         if(!(req.body.sex == "F" || req.body.sex == "M")) {
-            pageData.sexMessage += "Sex must be F or M"
-            validData = false
+            pageData.sexMessage += "Sex must be F or M";
+            validData = false;
         }
         if(!validator.isStrongPassword(req.body.password)) {
-            pageData.passwordMessage += "Password must have at least 8 characters, a lowercase, an uppercase, a number and a symbol"
-            validData = false
+            pageData.passwordMessage += "Password must have at least 8 characters, a lowercase, an uppercase, a number and a symbol";
+            validData = false;
         }
         
         if(!validData) {
@@ -139,30 +140,26 @@ function registerMiddleware(app: any) {
             insertUser(req.body.username, req.body.email, req.body.phone, req.body.address, req.body.password, req.body.sex,
             (err) => {
                 if ( err == null ){
-                console.log("TEST")
-            
-                let user = {
-                username : req.body.username,
-                email : req.body.email,
-                phone : req.body.phone,
-                address : req.body.address,
-                password : req.body.password,
-                sex : req.body.sex
-                }
-            
-                console.log(user)
-            
-                req.login(user, function (err: any) {
-                if (!err) {
-                    res.redirect('/');
-                } else {
-                    res.redirect('/register');
-                }
-                })
+                    let user = {
+                        username : req.body.username,
+                        email : req.body.email,
+                        phone : req.body.phone,
+                        address : req.body.address,
+                        password : req.body.password,
+                        sex : req.body.sex
+                    };
+                        
+                    req.login(user, function (err: any) {
+                        if (!err) {
+                            res.redirect('/');
+                        } else {
+                            res.redirect('/register');
+                        }
+                    });
                 }
                 else {
-                pageData.usernameMessage = "Username taken!"
-                res.render('pages/register', pageData);
+                    pageData.usernameMessage = "Username taken!";
+                    res.render('pages/register', pageData);
                 }
             });
         }

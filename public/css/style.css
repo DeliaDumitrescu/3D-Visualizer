@@ -1,4 +1,10 @@
-.space{
+body {
+    color: #1a202c;
+    text-align: left;
+    background-color: #e2e8f0;    
+}
+
+.space {
     padding: 20px;
     display: block;
     margin-left: auto;
@@ -11,52 +17,7 @@
     font-style: oblique;
     padding-left: 10px;
 }
-/* body {
-    background-color: #B3E5FC;
-    border-radius: 10px
-}
 
-.card {
-    width: 400px;
-    border: none;
-    border-radius: 10px;
-    background-color: #fff
-}
-
-.stats {
-    background: #f2f5f8 !important;
-    color: #000 !important
-}
-
-.articles {
-    font-size: 10px;
-    color: #a1aab9
-}
-
-.number1 {
-    font-weight: 500
-}
-
-.followers {
-    font-size: 10px;
-    color: #a1aab9
-}
-
-.number2 {
-    font-weight: 500
-}
-
-.rating {
-    font-size: 10px;
-    color: #a1aab9
-}
-
-.number3 {
-    font-weight: 500
-} */
-body{
-    background:#DCDCDC;
-}
 .card-box {
     padding: 20px;
     border-radius: 3px;
@@ -79,10 +40,12 @@ body{
     color: #797979;
     border: 2px solid #797979
 }
+
 .thumb-lg {
     height: 88px;
     width: 88px;
 }
+
 .img-thumbnail {
     padding: .25rem;
     background-color: #fff;
@@ -91,27 +54,28 @@ body{
     max-width: 100%;
     height: auto;
 }
+
 .text-pink {
     color: #ff679b!important;
 }
+
 .btn-rounded {
     border-radius: 2em;
 }
+
 .text-muted {
     color: #98a6ad!important;
 }
+
 h4 {
     line-height: 22px;
     font-size: 18px;
 }
-body {
-    color: #1a202c;
-    text-align: left;
-    background-color: #e2e8f0;    
-}
+
 .main-body {
     padding: 15px;
 }
+
 .card {
     box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
 }
@@ -237,7 +201,7 @@ a[data-toggle="collapse"] {
 }
   
 #rotationJogDial_knob {
-background: url('/base_one_knob.png');
+    background: url('/base_one_knob.png');
 }
 
 .form-range {

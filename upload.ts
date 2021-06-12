@@ -6,9 +6,9 @@ export function uploadMiddleware(app: any) {
         let data = {
           formButtonName: "Upload",
           username: req.user
-        }
+        };
         res.render("pages/upload", data);
-      })
+      });
 
     app.post('/fileupload', (req: any, res: any) => {
         if(!req.user) {
@@ -24,19 +24,19 @@ export function uploadMiddleware(app: any) {
         
             // Uploaded filename. Weird casting neccessary because formidable type definitions are wrong.
             var filename = ((files.filetoupload as unknown) as formidable.File ).name;
-            let t : any = req.user
+            let t : any = req.user;
             let userDir = './public/data/' + t.username;
             if (!fs.existsSync(userDir)){
                 fs.mkdirSync(userDir);
             }
         
             var newpath = userDir + "/" + filename;
-            console.log("File uploaded in " + newpath)
+            console.log("File uploaded in " + newpath);
         
             fs.rename(oldpath, newpath, function (errr: any) {
                 if (errr) throw errr;
                 res.redirect("/profile/" + t.username);
             });
         });
-    })
+    });
 }
