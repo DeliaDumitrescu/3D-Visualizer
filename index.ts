@@ -153,7 +153,7 @@ app.get('/upload', (req,res) => {
   // res.send('<form action="fileupload" method="post" enctype="multipart/form-data"><input type="file" name="filetoupload"><br><input type="submit"></form>');
   let data = {
     formButtonName: "Upload",
-    username: null
+    username: req.user
   }
   res.render("pages/upload", data);
 })
@@ -192,8 +192,9 @@ app.post('/fileupload', (req,res) => {
     fs.rename(oldpath, newpath, function (err) {
       if (err) throw err;
       // TODO: reply with an ejs page to let the user know the upload was successful.
-      res.write('Successfully uploaded!');
-      res.end();
+      //res.write('Successfully uploaded!');
+      res.redirect("/profile/" + t.username);
+      //res.end();
     });
     
   });

@@ -15,84 +15,84 @@
     <%- include('../partials/navbar', {username: profileData.username}); %>
     <div class="container">
       <div class="main-body">      
-            <div class="row gutters-sm">
-              <div class="col-md-4 mb-3">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="d-flex flex-column align-items-center text-center">
-                      <% if(profileData.sex == "F") { %> 
-                      <img src="https://bootdey.com/img/Content/avatar/avatar8.png" alt="Admin" class="rounded-circle" width="150">
-                      <% } else { %>
-                        <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" class="rounded-circle" width="150">
-                      <% } %>
-                        <div class="mt-3">
-                        <h4><%= profileData.username %></h4>
-                        <p class="text-muted font-size-sm"><%= profileData.address %></p>
-                        <button class="btn btn-primary"><a href="/upload" style="text-decoration: none; color: white;">Upload</a></button>
-                      </div>
-                    </div>
+        <div class="row gutters-sm">
+          <div class="col-md-4 mb-3">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex flex-column align-items-center text-center">
+                  <% if(profileData.sex == "F") { %> 
+                  <img src="https://bootdey.com/img/Content/avatar/avatar8.png" alt="Admin" class="rounded-circle" width="150">
+                  <% } else { %>
+                  <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" class="rounded-circle" width="150">
+                  <% } %>
+                  <div class="mt-3">
+                    <h4><%= profileData.username %></h4>
+                    <p class="text-muted font-size-sm"><%= profileData.address %></p>
+                    <button class="btn btn-primary"><a href="/upload" style="text-decoration: none; color: white;">Upload</a></button>
                   </div>
-                </div>
-              </div>
-              <div class="col-md-8">
-                <div class="card mb-3">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-sm-3">
-                        <h6 class="mb-0">Username</h6>
-                      </div>
-                      <div class="col-sm-9 text-secondary">
-                        <%= profileData.username %>
-                      </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                      <div class="col-sm-3">
-                        <h6 class="mb-0">Email</h6>
-                      </div>
-                      <div class="col-sm-9 text-secondary">
-                        <%= profileData.email %>
-                      </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                      <div class="col-sm-3">
-                        <h6 class="mb-0">Phone</h6>
-                      </div>
-                      <div class="col-sm-9 text-secondary">
-                        <%= profileData.phone %>
-                      </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                      <div class="col-sm-3">
-                        <h6 class="mb-0">Address</h6>
-                      </div>
-                      <div class="col-sm-9 text-secondary">
-                        <%= profileData.address %>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-  
-                <div class="row gutters-sm">
-                  <div class="col-sm-6 mb-3">
-                    <% models.forEach(function(model) { %>
-                      <div class="card" style="width: 715px;">
-                        <%- include('../partials/model', {username: profileData.username, model: model}); %>
-                        <div class="card-body">
-                          <h5 class="card-title"> <%= model %></h5>
-                          <a href="/show/<%= profileData.username %>/<%= model %>" class="btn btn-primary">Show</a>
-                          <a href="/delete/<%= profileData.username %>/<%= model %>" class="btn btn-primary">Delete</a>
-                        </div>
-                      </div><br>
-                <% }); %>
                 </div>
               </div>
             </div>
-  
+            <div class="card mt-3">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-sm-4">
+                    <h6 class="mb-0">Username</h6>
+                  </div>
+                  <div class="col-sm-6 text-secondary">
+                    <%= profileData.username %>
+                  </div>
+                </div>
+                <hr>
+                <div class="row">
+                  <div class="col-sm-4">
+                    <h6 class="mb-0">Email</h6>
+                  </div>
+                  <div class="col-sm-6 text-secondary">
+                    <%= profileData.email %>
+                  </div>
+                </div>
+                <hr>
+                <div class="row">
+                  <div class="col-sm-4">
+                    <h6 class="mb-0">Phone</h6>
+                  </div>
+                  <div class="col-sm-6 text-secondary">
+                    <%= profileData.phone %>
+                  </div>
+                </div>
+                <hr>
+                <div class="row">
+                  <div class="col-sm-4">
+                    <h6 class="mb-0">Address</h6>
+                  </div>
+                  <div class="col-sm-6 text-secondary">
+                    <%= profileData.address %>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+          <div class="col-md-8">
+            <div class="row gutters-sm">
+              <div class="col-sm-6 mb-3">
+                <% models.forEach(function(model) { %>
+                <div class="card" style="width: 715px;">
+                  <%- include('../partials/model', {username: profileData.username, model: model}); %>
+                  <div class="card-body">
+                    <h5 class="card-title"> <%= model %></h5>
+                    <a href="/show/<%= profileData.username %>/<%= model %>" class="btn btn-primary">Show</a>
+                    <a href="/delete/<%= profileData.username %>/<%= model %>" class="btn btn-primary">Delete</a>
+                  </div>
+                </div><br>
+                <% }); %>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
