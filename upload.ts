@@ -20,23 +20,29 @@ export function uploadMiddleware(app: any) {
         // So they have to be moved from the oldPath to the newPath
         // with fs.rename
         form.parse(req, function (err, fields, files) {
-            var oldpath = ((files.filetoupload as unknown) as formidable.File ).path;
-        
+            let oldpath = ((files.filetoupload as unknown) as formidable.File ).path;
             // Uploaded filename. Weird casting neccessary because formidable type definitions are wrong.
-            var filename = ((files.filetoupload as unknown) as formidable.File ).name;
-            let t : any = req.user;
-            let userDir = './public/data/' + t.username;
-            if (!fs.existsSync(userDir)){
-                fs.mkdirSync(userDir);
-            }
-        
-            var newpath = userDir + "/" + filename;
-            console.log("File uploaded in " + newpath);
-        
-            fs.rename(oldpath, newpath, function (errr: any) {
-                if (errr) throw errr;
-                res.redirect("/profile/" + t.username);
-            });
+            let filename = ((files.filetoupload as unknown) as formidable.File ).name;
+            let username = (<any>req.user).username;
+            moveFileFromTempDir(oldpath, <string>filename, username, res, ()=>{});
         });
+    });
+}
+
+export function moveFileFromTempDir(oldpath :string, filename :string, username:string, res: any, cb:any){
+    let userDir = './public/data/' + username;
+    if (!fs.existsSync(userDir)){
+        fs.mkdirSync(userDir);
+    }
+
+    var newpath = userDir + "/" + filename;
+    console.log("File uploaded in " + newpath);
+
+    fs.rename(oldpath, newpath, function (errr: any) {
+        if (errr) throw errr;
+        if (res){
+            res.redirect("/profile/" + username);
+        }
+        cb();
     });
 }

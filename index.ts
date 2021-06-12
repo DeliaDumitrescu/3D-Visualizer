@@ -1,5 +1,6 @@
 import express from 'express';
 import { linkMiddleware } from './auth';
+import { runAutomatedTests } from './autotests';
 import { getUsersWithSubstring } from './database';
 import { modelsMiddleware } from './models';
 import { uploadMiddleware } from './upload';
@@ -10,6 +11,10 @@ const PORT = 8080;
 linkMiddleware(app);
 uploadMiddleware(app);
 modelsMiddleware(app);
+
+runAutomatedTests();
+
+
 
 app.post("/search", (req, res) => {
   let search = req.body.searchdata;

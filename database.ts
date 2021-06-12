@@ -60,6 +60,16 @@ export function findUser(username: any, cb: any){
     });
 }
 
+export function deleteUser(username : string){
+    sqldb.serialize(() => {
+        sqldb.all(`DELETE FROM users WHERE username=?;`, username, (err: any, rows : any) => {
+            if (err) {
+                console.error(err.message);
+            }
+        });
+    });
+}
+
 export function getUsersWithSubstring(substring : any, cb : any) {
     sqldb.serialize(() => {
         sqldb.all(`SELECT username FROM users WHERE username LIKE \'%` + substring + "%\';", (err: any, rows : any) => {
