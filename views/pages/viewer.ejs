@@ -12,18 +12,129 @@
                 padding: 0;
             }
             #renderCanvas {
-                width: 100%;
-                height: 100%;
+                width: calc(100vw - 250px);
+                height: 100vh;
                 touch-action: none;
             }
         </style>
         <script src="https://cdn.babylonjs.com/babylon.js"></script>
         <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
         <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
+        <script src="../../scripts/jogDial.js"></script>
+        <link href="/css/color-picker.min.css" rel="stylesheet" type="text/css">
+        <script src="../../scripts/color-picker.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link href="/css/style.css" rel="stylesheet" type="text/css">
     </head>
    <body>
-    <canvas id="renderCanvas" touch-action="none"></canvas> <!-- touch-action="none" for best results from PEP -->
+    <div class="wrapper">
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3>Tree-D Visualizer</h3>
+            </div>
+
+            <ul class="list-unstyled components">
+                <p>Light Rotation</p>
+                <li>
+                    <div class="knobDiv">
+                    <div id="rotationJogDial"></div>
+                    </div>
+                </li>
+                <li class="active">
+                    <a href="#light1Submenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Light 1</a>
+                    <ul class="collapse list-unstyled" id="light1Submenu">
+                        <li>
+                            <p>Color</p>
+                            <div class="light1-color-picker"></div>
+                        </li>
+                        <li>
+                            <p>Intensity</p>
+                            <input type="range" class="form-range" id="intensityLight1">
+                        </li>
+                    </ul>
+                    <a href="#light2Submenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Light 2</a>
+                    <ul class="collapse list-unstyled" id="light2Submenu">
+                        <li>
+                            <p>Color</p>
+                            <div class="light2-color-picker"></div>
+                        </li>
+                        <li>
+                            <p>Intensity</p>
+                            <input type="range" class="form-range" id="intensityLight2">
+                        </li>
+                    </ul>
+                    <a href="#light3Submenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Light 3</a>
+                    <ul class="collapse list-unstyled" id="light3Submenu">
+                        <li>
+                            <p>Color</p>
+                            <div class="light3-color-picker"></div>
+                        </li>
+                        <li>
+                            <p>Intensity</p>
+                            <input type="range" class="form-range" id="intensityLight3">
+                        </li>
+                    </ul>
+                    <a href="#light4Submenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Light 4</a>
+                    <ul class="collapse list-unstyled" id="light4Submenu">
+                        <li>
+                            <p>Color</p>
+                            <div class="light4-color-picker"></div>
+                        </li>
+                        <li>
+                            <p>Intensity</p>
+                            <input type="range" class="form-range" id="intensityLight4">
+                        </li>
+                    </ul>
+                    <a href="#environmentSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Environment</a>
+                    <ul class="collapse list-unstyled" id="environmentSubmenu">
+                        <li>
+                            <p>Color</p>
+                            <div class="environment-color-picker"></div>
+                        </li>
+                        <li>
+                            <p>Intensity</p>
+                            <input type="range" class="form-range" id="intensityEnvironment">
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="dropdown">
+                <a class="btn btn-secondary" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Quick Animations
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="#" onclick="noneAnimation()">None</a>
+                <a class="dropdown-item" href="#" onclick="turntableAnimation()">Turntable</a>
+                <a class="dropdown-item" href="#" onclick="swingAnimation()">Swing</a>
+                <a class="dropdown-item" href="#" onclick="jumpTurnAnimation()">Jump & Turn</a>
+                <a class="dropdown-item" href="#" onclick="hoverAnimation()">Hover</a>
+                </div>
+            </div>
+
+            <div class="dropdown">
+                <a class="btn btn-secondary" href="#" role="button" id="dropdownSpeedsLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Animation speed
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="#" onclick="doubleSpeed()">2.0x</a>
+                <a class="dropdown-item" href="#" onclick="speed()">1.5x</a>
+                <a class="dropdown-item" href="#" onclick="normalSpeed()">1.0x</a>
+                <a class="dropdown-item" href="#" onclick="halfSpeed()">0.5x</a>
+                </div>
+            </div>
+
+        </nav>
+
+        <div id="content">
+            <canvas id="renderCanvas" touch-action="none"></canvas> <!-- touch-action="none" for best results from PEP -->
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script> modelName="./data/<%=username%>/<%=filename%>"</script>
-    <script src="/viewer.js"></script>
+    <script src="../../scripts/viewer.js"></script>
    </body>
 </html>

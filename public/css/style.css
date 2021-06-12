@@ -156,3 +156,120 @@ body {
 .shadow-none {
     box-shadow: none!important;
 }
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+}
+
+#sidebar.active {
+    margin-left: -250px;
+}
+
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    height: 100vh;
+    background: #343a40;
+    color: #fff;
+    transition: all 0.3s;
+    overflow-y: scroll;
+}
+
+#sidebar .sidebar-header {
+    padding: 20px;
+    background: #343a40;
+}
+
+#sidebar ul.components {
+    padding: 20px 0;
+    border-bottom: 1px solid #343a40;
+}
+
+#sidebar ul p {
+    color: #fff;
+    padding: 10px;
+}
+
+#sidebar ul li a {
+    padding: 10px;
+    font-size: 1.1em;
+    display: block;
+}
+#sidebar ul li a:hover {
+    color: #7386D5;
+    background: #fff;
+}
+
+#sidebar ul li.active > a, a[aria-expanded="true"] {
+    color: #fff;
+    background: #1d2024;
+}
+
+.content {
+    width: 300px;
+}
+
+a[data-toggle="collapse"] {
+    position: relative;
+}
+
+.dropdown-toggle::after {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+}
+
+.knobDiv {
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#rotationJogDial {
+    width: 200px;
+    height: 200px;
+    object-fit: fill;
+    background: url('/base_one_bg.png');
+}
+  
+#rotationJogDial_knob {
+background: url('/base_one_knob.png');
+}
+
+.form-range {
+    width: 210px;
+    margin-left: 10px;
+}
+
+.light1-color-picker {
+    padding-top: 150px;
+    margin-bottom: -130px;
+}
+
+.light2-color-picker {
+    padding-top: 150px;
+    margin-bottom: -130px;
+}
+
+.light3-color-picker {
+    padding-top: 150px;
+    margin-bottom: -130px;
+}
+
+.light4-color-picker {
+    padding-top: 150px;
+    margin-bottom: -130px;
+}
+
+.environment-color-picker {
+    padding-top: 150px;
+    margin-bottom: -130px;
+}
+
+.dropdown {
+    padding: 10px;
+}
