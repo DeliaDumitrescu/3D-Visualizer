@@ -12,7 +12,7 @@
     <link href="/css/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-    <%- include('../partials/navbar', {username: profileData.username}); %>
+    <%- include('../partials/navbar', {username: loggedUser}); %>
     <div class="container">
       <div class="main-body">      
             <div class="row gutters-sm">
@@ -78,13 +78,13 @@
                 <div class="row gutters-sm">
                   <div class="col-sm-6 mb-3">
                     <% models.forEach(function(model) { %>
-                      <div class="card" style="width: 18rem;">
+                      <div class="card" style="width: 715px;">
                         <%- include('../partials/model', {username: profileData.username, model: model}); %>
                         <div class="card-body">
                           <h5 class="card-title"> <%= model %></h5>
                           <a href="/show/<%= profileData.username %>/<%= model %>" class="btn btn-primary">Show</a>
                           <a href="/data/<%= profileData.username %>/<%= model %>" class="btn btn-primary" target="_blank">Download</a>
-                          <a href="/delete/<%= profileData.username %>/<%= model %>" class="btn btn-primary">Delete</a>
+                          <% if (loggedUser==profileData.username) { %><a href="/delete/<%= profileData.username %>/<%= model %>" class="btn btn-primary">Delete</a> <% } %>
                         </div>
                       </div><br>
                 <% }); %>

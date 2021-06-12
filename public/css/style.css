@@ -5,6 +5,12 @@
     margin-right: auto;
     width: 40%;
 }
+
+.validationMessage {
+    color: rgb(175, 11, 11);
+    font-style: oblique;
+    padding-left: 10px;
+}
 /* body {
     background-color: #B3E5FC;
     border-radius: 10px

@@ -7,6 +7,9 @@ let ejs = require('ejs');
 // rest of the code remains same
 const app = express();
 const PORT = 8080;
+
+var validator = require('validator');
+
 // SQLITE PART
 const sqlite3 = require('sqlite3').verbose();
 
@@ -37,12 +40,15 @@ let sqldb = new sqlite3.Database('./database/users.db', sqlite3.OPEN_READWRITE |
 });
 
 // TODO : use this to register users.
-function insertUser(username: string, email: string, phone: string, address: string, password: string, sex: string){
+function insertUser(username: string, email: string, phone: string, address: string, password: string, sex: string, cb : (err : Error | null) => any){
   sqldb.serialize(() => {
 		sqldb.run(`INSERT INTO "main"."users"("username", "email", "phone", "address","password", "sex") VALUES (?,?,?,?,?,?);`, username, email, phone, address, password, sex, function (err : any){
 			if (err) {
 				console.log (err)
-			}
+        cb(err)
+			} else{
+        cb(null)
+      }
 		})
 	});
 }
@@ -62,6 +68,7 @@ function findUser(username: any, cb: any){
         }
         else {
           cb("error : not registered", "not registered");
+          // console.log("not reg")
         }
 		  }
 		});
@@ -106,7 +113,7 @@ app.use(express.static('public'))
 passport.use(new Strategy(
   function(username : any, password : any, cb : any) {
     findUser(username, function(err : any, user : any) {
-      if (err) { return cb(err); }
+      if (err) { return cb(null); }
       if (!user) { return cb(null, false); }
       if (user.password != password) { return cb(null, false); }
       return cb(null, user);
@@ -121,7 +128,19 @@ app.post('/login',
 app.get('/login', (req,res) => {
   let data = {
     formButtonName: "Login",
-    username: null
+    username: null,
+    emailMessage: "",
+    emailValue: "",
+    usernameMessage: "",
+    usernameValue: "",
+    phoneMessage: "",
+    phoneValue: "",
+    addressMessage: "",
+    addressValue: "",
+    sexMessage: "",
+    sexValue: "",
+    passwordMessage: "",
+    passwordValue: ""
   }
   res.render("pages/login", data)
 })
@@ -186,14 +205,102 @@ app.post('/fileupload', (req,res) => {
 app.get('/register', (req, res) => {
   let data = {
     formButtonName: "Register",
-    username: null
+    username: null,
+    emailMessage: "",
+    emailValue: "",
+    usernameMessage: "",
+    usernameValue: "",
+    phoneMessage: "",
+    phoneValue: "",
+    addressMessage: "",
+    addressValue: "",
+    sexMessage: "",
+    sexValue: "",
+    passwordMessage: "",
+    passwordValue: ""
   }
   res.render("pages/register", data);
 })
 
 app.post('/register', (req, res) => {
-  insertUser(req.body.username, req.body.email, req.body.phone, req.body.address, req.body.password, req.body.sex);
-  res.redirect('/');
+  var validData = true;
+  let pageData = {
+    formButtonName: "Register",
+    username: null,
+    emailMessage: "",
+    emailValue: req.body.email,
+    usernameMessage: "",
+    usernameValue: req.body.username,
+    phoneMessage: "",
+    phoneValue: req.body.phone,
+    addressMessage: "",
+    addressValue: req.body.address,
+    sexMessage: "",
+    sexValue: req.body.sex,
+    passwordMessage: "",
+    passwordValue: req.body.password
+  };
+
+  if(!validator.isAlphanumeric(req.body.username)) {
+    pageData.usernameMessage = "Username must contain only letters and numbers"
+    validData = false
+  }
+  if(!validator.isEmail(req.body.email)) {
+    pageData.emailMessage += "Email must be valid"
+    validData = false
+  }
+  if(!validator.isMobilePhone(req.body.phone)) {
+    pageData.phoneMessage += "Phone number must be valid"
+    validData = false
+  }
+  if(validator.isEmpty(req.body.address)) {
+    pageData.addressMessage += "Address should be entered"
+    validData = false
+  }
+  if(!(req.body.sex == "F" || req.body.sex == "M")) {
+    pageData.sexMessage += "Sex must be F or M"
+    validData = false
+  }
+  if(!validator.isStrongPassword(req.body.password)) {
+    pageData.passwordMessage += "Password must have at least 8 characters, a lowercase, an uppercase, a number and a symbol"
+    validData = false
+  }
+  
+  if(!validData) {
+    res.render('pages/register', pageData);
+  }
+  else {
+    insertUser(req.body.username, req.body.email, req.body.phone, req.body.address, req.body.password, req.body.sex,
+      (err) => {
+        if ( err == null ){
+        console.log("TEST")
+    
+        let user = {
+          username : req.body.username,
+          email : req.body.email,
+          phone : req.body.phone,
+          address : req.body.address,
+          password : req.body.password,
+          sex : req.body.sex
+         }
+    
+         console.log(user)
+    
+         req.login(user, function (err) {
+          if ( ! err ){
+              res.redirect('/');
+          } else {
+            res.redirect('/register');
+          }
+         })
+        }
+        else {
+          pageData.usernameMessage = "Username taken!"
+          res.render('pages/register', pageData);
+        }
+      });
+  }
+
 })
 
 
@@ -201,6 +308,12 @@ app.post('/register', (req, res) => {
 app.get('/profile/:user/', (req,res) => {
 
   let username = req.params["user"]
+
+  let loggedUser : any = null;
+
+  if ( req.user ){
+    loggedUser = (<any>req.user).username;
+  }
 
   findUser(username, (err: any, row: any) => {
     console.log(row);
@@ -214,7 +327,8 @@ app.get('/profile/:user/', (req,res) => {
   
     let pageData = {
       profileData: row,
-      models: models
+      models: models,
+      loggedUser : loggedUser
     };
   
     res.render("pages/profile", pageData)
@@ -225,10 +339,14 @@ app.get('/delete/:user/:filename', (req, res) => {
   let username = req.params["user"]
   let filename = req.params["filename"]
 
-  try {
-    fs.unlinkSync("./public/data/" + username + "/" + filename);
-  } catch(err) {
-    console.error(err)
+  if ( req.user ){
+    if ( (<any>req.user).username == username ){ //if logged in as the target user, then delete the file, else don't
+      try {
+        fs.unlinkSync("./public/data/" + username + "/" + filename);
+      } catch(err) {
+        console.error(err)
+      }
+    }
   }
 
   // res.render("pages/profile", pageData)
