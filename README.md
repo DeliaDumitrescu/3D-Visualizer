@@ -21,7 +21,7 @@ Easy, just browse the main page to see what other made if you're just regular us
 
 If you are an artist, go ahead and make an account, then upload your models. It's as simple as that!
 
-# User stores
+# User stories
 
 * As a 3D artist I want a place where I can upload my 3D models so people can appreciate my work. 
 * As a mother I want a platform with colorful 3D objects so I can use them to teach my child about various things. 
